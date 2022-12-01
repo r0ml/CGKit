@@ -62,7 +62,17 @@ public struct CGPolygon {
     return hull
   }
   
-  
+  public var boundingBox : CGRect { get {
+    var origin = points[0]
+    var fp = points[0]
+    for p in points.dropFirst() {
+      origin = CGPoint(x: min(origin.x, p.x), y: min(origin.y, p.y))
+      fp = CGPoint(x: max(fp.x, p.x), y: max(fp.y, p.y))
+    }
+    let extent = CGSize(width: fp.x - origin.x, height: fp.y - origin.y)
+    return CGRect(origin: origin, size: extent)
+  }}
+
   
 }
 

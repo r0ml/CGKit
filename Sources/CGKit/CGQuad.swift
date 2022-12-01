@@ -44,6 +44,17 @@ public struct CGQuad {
     points = [tl, tr, br, bl]
   }
   
+  public init(points p: [CGPoint]) {
+    points = p
+  }
+  
+  public init(_ r : CGRect) {
+    points = [CGPoint(x: r.minX, y:r.maxY ),
+              CGPoint(x: r.maxX, y: r.maxY),
+              CGPoint(x: r.maxX, y: r.minY),
+              CGPoint(x: r.minX, y: r.minY)]
+  }
+  
   // FIXME: this isn't right -- it's just a placeholder until I do it right
   public var boundingBox : CGRect { get {
     let origin = CGPoint(x: min(topLeft.x, topRight.x, bottomLeft.x, bottomRight.x),
@@ -159,22 +170,26 @@ public struct CGQuad {
     return CGQuad.init(topLeft: tl, topRight: tr, bottomRight: br, bottomLeft: bl)
   }
 
+  public func applying(_ t : CGAffineTransform) -> CGQuad {
+    return CGQuad(points: points.map { $0.applying(t) } )
+  }
+
+  public func rotated(_ angle: CGFloat, around: CGPoint? = nil) -> CGQuad {
+    let a = around == nil ? center : around!
+    let transform = CGAffineTransform(translationX: -a.x, y: -a.y).concatenating(CGAffineTransform(rotationAngle: angle))
+      .concatenating(CGAffineTransform(translationX: a.x, y: a.y))
+    return self.applying(transform)
+  }
   
-  public func rotated(_ angle : CGFloat) -> CGQuad {
+  /*
+  public func rotatedAroundCenter(_ angle : CGFloat) -> CGQuad {
     let ctr = center
     let transform = CGAffineTransform(translationX: -ctr.x, y: -ctr.y).concatenating(CGAffineTransform(rotationAngle: angle)).concatenating(CGAffineTransform(translationX: ctr.x, y: ctr.y))
 
-    let res = CGQuad.init(
-                                    //FIXME: box.applying(transform)
-                                    topLeft: topLeft.applying(transform),
-                                    topRight: topRight.applying(transform),
-                                    bottomRight: bottomRight.applying(transform),
-                                    bottomLeft: bottomLeft.applying(transform)
-                                   )
-
+    return self.applying(transform)
   //  res.bookCandidates = bookCandidates
-    return res
   }
+   */
     
   public func expanded() -> CGQuad {
     let kk = self.rotated(CGFloat.pi-self.angle)
@@ -236,7 +251,22 @@ public struct CGQuad {
     return newm
   }
   
+
   
+  public func coalesce(_ other : CGQuad) -> CGQuad {
+    let a = self.angle
+    let b = self.rotated(-a, around: CGPoint.zero)
+    let c = other.rotated(-a, around: CGPoint.zero)
+    
+    let tl = CGPoint(x: min(b.topLeft.x, c.topLeft.x), y: max(b.topLeft.y, c.topLeft.y))
+    let tr = CGPoint(x: max(b.topRight.x, c.topRight.x), y: max(b.topRight.y, c.topRight.y))
+    let br = CGPoint(x: max(b.bottomRight.x, c.bottomRight.x), y: min(b.bottomRight.y, c.bottomRight.y))
+    let bl = CGPoint(x: min(b.bottomLeft.x, c.bottomLeft.x), y: min(b.bottomLeft.y, c.bottomLeft.y))
+    let r = CGQuad(topLeft: tl, topRight: tr, bottomRight: br, bottomLeft: bl)
+    
+    let k = CGPolygon( (b.points + c.points) )
+    return CGQuad(k.boundingBox).rotated(a, around: CGPoint.zero)
+  }
 }
 
 
