@@ -49,10 +49,10 @@ public struct CGQuad {
   }
   
   public init(_ r : CGRect) {
-    points = [CGPoint(x: r.minX, y:r.maxY ),
-              CGPoint(x: r.maxX, y: r.maxY),
+    points = [CGPoint(x: r.minX, y:r.minY ),
               CGPoint(x: r.maxX, y: r.minY),
-              CGPoint(x: r.minX, y: r.minY)]
+              CGPoint(x: r.maxX, y: r.maxY),
+              CGPoint(x: r.minX, y: r.maxY)]
   }
   
   // FIXME: this isn't right -- it's just a placeholder until I do it right
@@ -117,7 +117,7 @@ public struct CGQuad {
   }
 
   public var angle : CGFloat {
-    return atan2(topLeft.y - topRight.y, topLeft.x - topRight.x)
+    return atan2(topRight.y - topLeft.y, topRight.x - topLeft.x)
   }
   
   public var area : CGFloat {
