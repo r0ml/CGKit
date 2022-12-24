@@ -29,9 +29,9 @@ public struct CGPolygon {
 
   public var convexHull : [CGPoint] {
     let (bottomPointIdx, _) = points.enumerated().min(by: { if $0.element.y < $1.element.y { return true} else if $0.element.y == $1.element.y { return $0.element.x < $1.element.x } else { return false } })! // smallest y
-    var p = bottomPointIdx
+    let p = bottomPointIdx
     let pp = points[p]
-    var q = 0
+    // let q = 0
     let k = points.compactMap { (m : CGPoint) -> (CGPoint, CGFloat)? in
       let d = m.distance(to: pp)
       if d == 0 { return nil } else { return (m, (m.x - pp.x) / d ) }

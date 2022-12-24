@@ -258,11 +258,13 @@ public struct CGQuad {
     let b = self.rotated(-a, around: CGPoint.zero)
     let c = other.rotated(-a, around: CGPoint.zero)
     
+    /*
     let tl = CGPoint(x: min(b.topLeft.x, c.topLeft.x), y: max(b.topLeft.y, c.topLeft.y))
     let tr = CGPoint(x: max(b.topRight.x, c.topRight.x), y: max(b.topRight.y, c.topRight.y))
     let br = CGPoint(x: max(b.bottomRight.x, c.bottomRight.x), y: min(b.bottomRight.y, c.bottomRight.y))
     let bl = CGPoint(x: min(b.bottomLeft.x, c.bottomLeft.x), y: min(b.bottomLeft.y, c.bottomLeft.y))
-    let r = CGQuad(topLeft: tl, topRight: tr, bottomRight: br, bottomLeft: bl)
+    // let r = CGQuad(topLeft: tl, topRight: tr, bottomRight: br, bottomLeft: bl)
+    */
     
     let k = CGPolygon( (b.points + c.points) )
     return CGQuad(k.boundingBox).rotated(a, around: CGPoint.zero)
